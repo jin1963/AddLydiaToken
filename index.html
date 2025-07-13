@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add LYDIA Token to MetaMask</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin-top: 60px;
+      background-color: #f4f4f7;
+      text-align: center;
+    }
+    .container {
+      display: inline-block;
+      padding: 30px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    button {
+      background-color: #ffc107;
+      border: none;
+      padding: 12px 20px;
+      margin: 12px;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #e0a800;
+    }
+    img {
+      width: 150px;
+      margin-bottom: 10px;
+    }
+    #status {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🚀 Add LYDIA Token to MetaMask</h2>
+    <img src="https://i.ibb.co/39pTgVWN/lydia.png" alt="LYDIA Logo" id="logo" /><br/>
+    
+    <button id="connectWalletBtn">🔗 Connect Wallet</button>
+    <p id="walletAddress"></p>
+    
+    <button id="addTokenBtn">➕ Add LYDIA Token</button>
+    <p id="status"></p>
+  </div>
+
+  <script>
+    const tokenAddress = "0x0fa662697d93Eb024f411E416f681EA7FECFcF96";
+    const tokenSymbol = "LYDIA";
+    const tokenDecimals = 18;
+    const tokenImage = "https://i.ibb.co/39pTgVWN/lydia.png";
+
+    let walletConnected = false;
+
+    document.getElementById("connectWalletBtn").addEventListener("click", async () => {
+      if (window.ethereum) {
+        try {
+          const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+          document.getElementById("walletAddress").innerText = "✅ Connected:\n" + accounts[0];
+          walletConnected = true;
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        alert("❌ MetaMask not detected");
+      }
+    });
+
+    document.getElementById("addTokenBtn").addEventListener("click", async () => {
+      if (!walletConnected) {
+        alert("Please connect wallet first!");
+        return;
+      }
+
+      try {
+        const wasAdded = await window.ethereum.request({
+          method: "wallet_watchAsset",
+          params: {
+            type: "ERC20",
+            options: {
+              address: tokenAddress,
+              symbol: tokenSymbol,
+              decimals: tokenDecimals,
+              image: tokenImage,
+            },
+          },
+        });
+
+        const status = document.getElementById("status");
+        if (wasAdded) {
+          status.innerHTML = "✅ LYDIA Token added to MetaMask!";
+        } else {
+          status.innerHTML = "❌ Failed to add token";
+        }
+      } catch (error) {
+        console.error(error);
+        document.getElementById("status").innerHTML = "❌ Failed to add token";
+      }
+    });
+  </script>
+</body>
+</html>
